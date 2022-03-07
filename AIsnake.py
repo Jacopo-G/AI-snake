@@ -11,6 +11,7 @@ white = (255, 255, 255)
 red = (255, 0, 0)
 screen = pygame.display.set_mode((800, 800))
 time = 0
+directions = [0, 1, 2, 3]
 
 class Snake:
 
@@ -18,8 +19,8 @@ class Snake:
 
         self.color = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
         self.consecutive_turns = 0
-        self.direction = 0
-        self.past_direction = 0
+        self.direction = -1
+        self.past_direction = -1
         self.apples = 0
         self.x = 400
         self.y = 400
@@ -27,6 +28,7 @@ class Snake:
         self.head = pygame.Surface([10, 10])
         self.head.fill(self.color)
         self.is_alive = True
+        self.turns = []
     
     def spawn_apple(self):
         self.apple = pygame.Surface([10, 10])
@@ -49,8 +51,8 @@ class Snake:
             self.adjacent += 1
         if (self.x, self.y + 1) in self.surfaces:
             self.adjacent += 1
-        
-        return [self.x - self.ax, self.y - self.ay, self.direction, self.past_direction, len(self.surfaces), self.adjacent,]
+
+        return [self.x - self.ax, self.y - self.ay, self.direction, self.past_direction, len(self.surfaces), self.adjacent, self.consecutive_turns, self.x, self.y, abs(self.x - 800), abs(self.y - 800)]
     
     def check_collision(self):
         
@@ -118,13 +120,13 @@ def play_snake(genomes, config):
         for index, snake in enumerate(snakes):
             output = nets[index].activate(snake.get_data())
             i = output.index(max(output))
-            if i == 0:
+            if i == 0 and snake.past_direction != 2:
                 snake.direction = 0
-            elif i == 1:
-                snake.direction = 1
-            elif i == 2:
+            elif i == 1 and snake.past_direction != 3:
+                snake.direction  = 1
+            elif i == 2 and snake.past_direction != 0:
                 snake.direction = 2
-            else:
+            elif i == 3 and snake.past_direction != 1:
                 snake.direction = 3
         
         remain_snakes = 0
@@ -147,6 +149,19 @@ def play_snake(genomes, config):
             if snake.direction == 2 and snake.past_direction != 0: snake.y += 10
             if snake.direction == 3 and snake.past_direction != 1: snake.x -= 10
             if snake.direction == 1 and snake.past_direction != 3: snake.x += 10
+
+            #print(snake.direction)
+            #print(snake.past_direction)
+
+            if snake.direction == directions[snake.past_direction - 1]: 
+                snake.turns.append("Left")
+            elif snake.past_direction == 3 and snake.direction == 0: 
+                snake.turns.append("Right")
+            elif snake.direction == snake.past_direction + 1: 
+                snake.turns.append("Right")
+            if "Right" and  "Left" in snake.turns: snake.turns.clear()
+
+            snake.consecutive_turns = len(snake.turns)
             snake.past_direction = snake.direction
 
         for snake in snakes:
@@ -187,7 +202,7 @@ def play_snake(genomes, config):
 
 if __name__ == "__main__":
 
-    config_path = "./PythonProjects/AISnake/config-feedforward.txt"
+    config_path = "./AISnake/config-feedforward.txt"
     config = neat.config.Config(neat.DefaultGenome, neat.DefaultReproduction,
                                 neat.DefaultSpeciesSet, neat.DefaultStagnation, config_path)
 
