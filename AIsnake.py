@@ -14,6 +14,7 @@ class Snake:
 
     def __init__(self):
 
+        self.color = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
         self.direction = 0
         self.past_direction = 0
         self.apples = 0
@@ -21,14 +22,14 @@ class Snake:
         self.y = 400
         self.surfaces = []
         self.head = pygame.Surface([10, 10])
-        self.head.fill(white)
+        self.head.fill(self.color)
         self.is_alive = True
     
     def spawn_apple(self):
         self.apple = pygame.Surface([10, 10])
         self.ax = random.randint(1, 79) * 10
         self.ay = random.randint(1, 79) * 10
-        self.apple.fill(red)
+        self.apple.fill(self.color)
         while (self.ax, self.ay) in self.surfaces:
             self.ax = random.randint(1, 79) * 10
             self.ay = random.randint(1, 79) * 10
@@ -36,15 +37,16 @@ class Snake:
         #screen.blit(self.apple, (self.ax, self.ay))
     
     def get_data(self):
-        if self.direction == 0: 
-            self.next_xy = (self.x, self.y - 1)
-        elif self.direction == 1:
-            self.next_xy = (self.x + 1, self.y)
-        elif self.direction == 2:
-            self.next_xy = (self.x, self.y + 1)
-        else:
-            self.next_xy = (self.x - 1, self.y)
-        return [self.x - self.ax, self.y - self.ay, self.direction, len(self.surfaces), self.next_xy in self.surfaces]
+        adjacent = 0
+        if (self.x - 1, self.y) in self.surfaces:
+            adjacent += 1
+        if (self.x + 1, self.y) in self.surfaces:
+            adjacent += 1
+        if (self.x, self.y - 1) in self.surfaces:
+            adjacent += 1
+        if (self.x, self.y + 1) in self.surfaces:
+            adjacent += 1
+        return [self.x - self.ax, self.y - self.ay, self.direction, self.past_direction, len(self.surfaces), adjacent]
     
     def check_collision(self):
         
@@ -106,6 +108,8 @@ def play_snake(genomes, config):
                 if event.key == pygame.K_SPACE:
                     for snake in snakes:
                         snake.is_alive = False
+
+        
         
         for index, snake in enumerate(snakes):
             output = nets[index].activate(snake.get_data())
@@ -163,9 +167,11 @@ def play_snake(genomes, config):
                     high_score = snake.apples
 
         score = font.render(str(high_score), False, red)
+        gen = font.render(str(generation), False, red)
 
         #screen.blit(head, (x, y))
         screen.blit(score, (400, 20))
+        screen.blit(gen, (20, 20))
         pygame.display.update()
         clock.tick(120)
         for snake in snakes:
@@ -187,4 +193,4 @@ if __name__ == "__main__":
     stats = neat.StatisticsReporter()
     p.add_reporter(stats)
 
-    p.run(play_snake, 100)
+    p.run(play_snake, 500)
