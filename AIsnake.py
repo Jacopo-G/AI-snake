@@ -1,3 +1,5 @@
+
+
 import neat
 import pygame
 from sys import exit
@@ -15,6 +17,7 @@ class Snake:
     def __init__(self):
 
         self.color = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
+        self.consecutive_turns = 0
         self.direction = 0
         self.past_direction = 0
         self.apples = 0
@@ -37,16 +40,17 @@ class Snake:
         #screen.blit(self.apple, (self.ax, self.ay))
     
     def get_data(self):
-        adjacent = 0
+        self.adjacent = 0
         if (self.x - 1, self.y) in self.surfaces:
-            adjacent += 1
+            self.adjacent += 1
         if (self.x + 1, self.y) in self.surfaces:
-            adjacent += 1
+            self.adjacent += 1
         if (self.x, self.y - 1) in self.surfaces:
-            adjacent += 1
+            self.adjacent += 1
         if (self.x, self.y + 1) in self.surfaces:
-            adjacent += 1
-        return [self.x - self.ax, self.y - self.ay, self.direction, self.past_direction, len(self.surfaces), adjacent]
+            self.adjacent += 1
+        
+        return [self.x - self.ax, self.y - self.ay, self.direction, self.past_direction, len(self.surfaces), self.adjacent,]
     
     def check_collision(self):
         
@@ -183,7 +187,7 @@ def play_snake(genomes, config):
 
 if __name__ == "__main__":
 
-    config_path = "./AISnake/config-feedforward.txt"
+    config_path = "./PythonProjects/AISnake/config-feedforward.txt"
     config = neat.config.Config(neat.DefaultGenome, neat.DefaultReproduction,
                                 neat.DefaultSpeciesSet, neat.DefaultStagnation, config_path)
 
@@ -194,3 +198,4 @@ if __name__ == "__main__":
     p.add_reporter(stats)
 
     p.run(play_snake, 500)
+
