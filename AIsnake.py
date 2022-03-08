@@ -42,17 +42,20 @@ class Snake:
         #screen.blit(self.apple, (self.ax, self.ay))
     
     def get_data(self):
-        self.adjacent = 0
+        self.left_adjacent = 0
+        self.right_adjacent = 0
+        self.up_adjacent = 0
+        self.down_adjacent = 0
         if (self.x - 1, self.y) in self.surfaces:
-            self.adjacent += 1
+            self.left_adjacent += 1
         if (self.x + 1, self.y) in self.surfaces:
-            self.adjacent += 1
+            self.right_adjacent += 1
         if (self.x, self.y - 1) in self.surfaces:
-            self.adjacent += 1
+            self.up_adjacent += 1
         if (self.x, self.y + 1) in self.surfaces:
-            self.adjacent += 1
+            self.down_adjacent += 1
 
-        return [self.x - self.ax, self.y - self.ay, self.direction, self.past_direction, len(self.surfaces), self.adjacent, self.consecutive_turns, self.x, self.y, abs(self.x - 800), abs(self.y - 800)]
+        return [self.x - self.ax, self.y - self.ay, self.direction, self.past_direction, len(self.surfaces), self.left_adjacent, self.right_adjacent, self.up_adjacent, self.down_adjacent, self.consecutive_turns, self.x, self.y, abs(self.x - 800), abs(self.y - 800)]
     
     def check_collision(self):
         
