@@ -1,5 +1,3 @@
-
-
 import neat
 import pygame
 from sys import exit
@@ -12,6 +10,7 @@ red = (255, 0, 0)
 screen = pygame.display.set_mode((800, 800))
 time = 0
 directions = [0, 1, 2, 3]
+high_scores = []
 
 class Snake:
 
@@ -42,17 +41,20 @@ class Snake:
         #screen.blit(self.apple, (self.ax, self.ay))
     
     def get_data(self):
-        self.adjacent = 0
+        self.left_adjacent = 0
+        self.right_adjacent = 0
+        self.up_adjacent = 0
+        self.down_adjacent = 0
         if (self.x - 1, self.y) in self.surfaces:
-            self.adjacent += 1
+            self.left_adjacent += 1
         if (self.x + 1, self.y) in self.surfaces:
-            self.adjacent += 1
+            self.right_adjacent += 1
         if (self.x, self.y - 1) in self.surfaces:
-            self.adjacent += 1
+            self.up_adjacent += 1
         if (self.x, self.y + 1) in self.surfaces:
-            self.adjacent += 1
+            self.down_adjacent += 1
 
-        return [self.x - self.ax, self.y - self.ay, self.direction, self.past_direction, len(self.surfaces), self.adjacent, self.consecutive_turns, self.x, self.y, abs(self.x - 800), abs(self.y - 800)]
+        return [self.x - self.ax, self.y - self.ay, self.direction, self.past_direction, len(self.surfaces), self.left_adjacent, self.right_adjacent, self.up_adjacent, self.down_adjacent, self.consecutive_turns, self.x, self.y, abs(self.x - 800), abs(self.y - 800)]
     
     def check_collision(self):
         
@@ -102,9 +104,18 @@ def play_snake(genomes, config):
         snake.spawn_apple()
     global generation 
     generation += 1
+
+    past_high_score = 0
+
+    for score in high_scores:
+        if score > past_high_score:
+            past_high_score = score
+
+    high_scores = []
     time = 0
 
     while True:
+        high_scores.append(high_score)
         high_score = 0
 
         for event in pygame.event.get():
@@ -186,10 +197,12 @@ def play_snake(genomes, config):
                     high_score = snake.apples
 
         score = font.render(str(high_score), False, red)
+        past_score = font.render(str(past_high_score), False, red)
         gen = font.render(str(generation), False, red)
 
         #screen.blit(head, (x, y))
         screen.blit(score, (400, 20))
+        screen.blit(past_score, (350, 20))
         screen.blit(gen, (20, 20))
         pygame.display.update()
         clock.tick(120)
@@ -211,6 +224,8 @@ if __name__ == "__main__":
     p.add_reporter(neat.StdOutReporter(True))
     stats = neat.StatisticsReporter()
     p.add_reporter(stats)
+    
+    high_scores = []
 
     p.run(play_snake, 500)
 
