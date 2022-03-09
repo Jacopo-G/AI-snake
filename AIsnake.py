@@ -22,8 +22,8 @@ class Snake:
         self.direction = -1
         self.past_direction = -1
         self.apples = 0
-        self.x = 400
-        self.y = 400
+        self.x = random.randint(1, 79) * 10
+        self.y = random.randint(1, 79) * 10
         self.surfaces = []
         self.head = pygame.Surface([10, 10])
         self.head.fill(self.color)
@@ -46,13 +46,13 @@ class Snake:
         self.right_adjacent = 0
         self.up_adjacent = 0
         self.down_adjacent = 0
-        if (self.x - 1, self.y) in self.surfaces:
+        if (self.x - 10, self.y) in self.surfaces:
             self.left_adjacent += 1
-        if (self.x + 1, self.y) in self.surfaces:
+        if (self.x + 10, self.y) in self.surfaces:
             self.right_adjacent += 1
-        if (self.x, self.y - 1) in self.surfaces:
+        if (self.x, self.y - 10) in self.surfaces:
             self.up_adjacent += 1
-        if (self.x, self.y + 1) in self.surfaces:
+        if (self.x, self.y + 10) in self.surfaces:
             self.down_adjacent += 1
 
         return [self.x - self.ax, self.y - self.ay, self.direction, self.past_direction, len(self.surfaces), self.left_adjacent, self.right_adjacent, self.up_adjacent, self.down_adjacent, self.consecutive_turns, self.x, self.y, abs(self.x - 800), abs(self.y - 800)]
@@ -115,8 +115,7 @@ def play_snake(genomes, config):
                 exit()
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE:
-                    for snake in snakes:
-                        snake.is_alive = False
+                    print("Hello!")
 
         
         
@@ -197,7 +196,7 @@ def play_snake(genomes, config):
         pygame.display.update()
         clock.tick(120)
         for snake in snakes:
-            if snake.apples <= 3 and time > 200:
+            if snake.apples <= 3 and time > 300:
                 snake.is_alive = False 
         time += 1
 
@@ -216,4 +215,3 @@ if __name__ == "__main__":
     p.add_reporter(stats)
 
     p.run(play_snake, 500)
-
