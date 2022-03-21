@@ -1,5 +1,3 @@
-
-
 import neat
 import pygame
 from sys import exit
@@ -54,8 +52,11 @@ class Snake:
             self.up_adjacent += 1
         if (self.x, self.y + 10) in self.surfaces:
             self.down_adjacent += 1
-
-        return [self.x - self.ax, self.y - self.ay, self.direction, self.past_direction, len(self.surfaces), self.left_adjacent, self.right_adjacent, self.up_adjacent, self.down_adjacent, self.consecutive_turns, self.x, self.y, abs(self.x - 800), abs(self.y - 800)]
+        if len(self.surfaces) >= 1: 
+            self.dist_from_tail = (abs(self.x - self.surfaces[0][0]), abs(self.y - self.surfaces[0][1]))
+        else:
+            self.dist_from_tail = (-1, -1)
+        return [self.x - self.ax, self.y - self.ay, self.direction, self.past_direction, len(self.surfaces), self.left_adjacent, self.right_adjacent, self.up_adjacent, self.down_adjacent, self.consecutive_turns, self.x, self.y, abs(self.x - 800), abs(self.y - 800), self.dist_from_tail[0], self.dist_from_tail[1]]
     
     def check_collision(self):
         
